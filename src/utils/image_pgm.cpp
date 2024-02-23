@@ -1,3 +1,4 @@
+
 #include "image.h"
 #include <fstream>
 #include <iostream>
@@ -27,6 +28,8 @@ void ImagePGM::_lire_image_pgm(std::string path) {
 
   file.close();
 }
+
+ImagePGM::ImagePGM(int w, int h) : Image(w, h) { format = "P5"; }
 
 ImagePGM::ImagePGM(std::string filename) : Image() {
   _lire_image_pgm(filename);

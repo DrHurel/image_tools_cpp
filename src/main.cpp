@@ -1,3 +1,4 @@
+#include "brush.h"
 #include "image.h"
 int main() {
   ImagePGM img("./assets/man.pgm");
@@ -11,6 +12,10 @@ int main() {
 
   img.writeProfil("./output/histo_column.txt", 30, false);
   img2.writeProfil("./output/histo2_column.txt", 30, false);
+
+  auto b = CircleBrush(2);
+
+  img.blur(b).write("./output/blurred.pgm");
 
   return 0;
 }

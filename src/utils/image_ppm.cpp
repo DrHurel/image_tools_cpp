@@ -32,6 +32,11 @@ ImagePPM::ImagePPM(std::string filename) : Image() {
   _lire_image_ppm(filename);
 }
 
+ImagePPM::ImagePPM(int w, int h) : Image(w, h) {
+  format = "P6";
+  data.resize(3 * width * height);
+}
+
 void ImagePPM::write(std::string filename) {
   std::ofstream file(filename, std::ios::binary);
   if (!file.is_open()) {
@@ -51,8 +56,10 @@ PixelRGB ImagePPM::getPixel(int x, int y) const {
           static_cast<unsigned char>(data.at(3 * (y * width + x) + 1)),
           static_cast<unsigned char>(data.at(3 * (y * width + x) + 2))};
 }
-void ImagePPM::setPixel(int x, int y, char value) {
-  data.at(3 * (y * width + x)) = value;
+void ImagePPM::setPixel(int x, int y, PixelRGB value) {
+  data.at(3 * (y * width + x)) = value.r;
+  data.at(3 * (y * width + x) + 1) = value.g;
+  data.at(3 * (y * width + x) + 2) = value.b;
 }
 
 void ImagePPM::writeProfil(std::string filename, int target, bool isLine) {
