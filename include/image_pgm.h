@@ -21,10 +21,28 @@ public:
   unsigned char getPixel(int x, int y) const;
   void setPixel(int x, int y, unsigned char value);
 
+  /**
+   * @brief génère un histogramme de l'image et l'écrit dans un fichier
+   *
+   * @param filename le nom du fichier
+   */
   void histogram(std::string filename);
+  /**
+   * @brief génère un profil de l'image et l'écrit dans un fichier
+   *
+   * @param filename le nom du fichier
+   * @param target la ligne ou la colonne à extraire
+   * @param isLine  true si on veut extraire une ligne, false si on veut
+   * extraire une colonne
+   */
   void writeProfil(std::string filename, int target, bool isLine);
 
+  // ----------------- Gradient -----------------
+
   ImagePGM mapGradient() const;
+  ImagePGM threshold_gradient(int threshold) const;
+  ImagePGM threshold_gradient_hys(int threshold_down, int threshold_up,
+                                  int radius) const;
 
   template <typename T> ImagePGM blur(T b) {
     auto res = ImagePGM(getWidth(), getHeight());

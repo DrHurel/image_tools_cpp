@@ -27,6 +27,7 @@ int main() {
   img2.write("./output/negated2.ppm");
 
   img.mapGradient().blur(CircleBrush(1)).write("./output/gradient.pgm");
-
+  img.threshold_gradient(40).write("./output/gradient_threshold.pgm");
+  img.threshold_gradient_hys(40, 120, 1).write("./output/gradient_hys.pgm");
   return 0;
 }

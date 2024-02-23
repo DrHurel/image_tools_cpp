@@ -117,3 +117,47 @@ ImagePGM ImagePGM::mapGradient() const {
   }
   return res;
 }
+
+ImagePGM ImagePGM::threshold_gradient(int value) const {
+  ImagePGM res(width, height);
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+
+      int dx = getPixel(x - 1, y) - getPixel(x + 1, y);
+      int dy = getPixel(x, y - 1) - getPixel(x, y + 1);
+      res.setPixel(x, y, std::sqrt(dx * dx + dy * dy) > value ? 255 : 0);
+    }
+  }
+  return res;
+}
+
+ImagePGM ImagePGM::threshold_gradient_hys(int threshold_down, int threshold_up,
+                                          int radius) const {
+
+  ImagePGM res(width, height);
+  for (int x = 0; x < width; x++) {
+    for (int y = 0; y < height; y++) {
+
+      int dx = getPixel(x - 1, y) - getPixel(x + 1, y);
+      int dy = getPixel(x, y - 1) - getPixel(x, y + 1);
+      int grad = std::sqrt(dx * dx + dy * dy);
+      if (grad > threshold_up) {
+        res.setPixel(x, y, 255);
+      } else if (grad < threshold_down) {
+        res.setPixel(x, y, 0);
+      } else {
+        bool isMax = true;
+        for (int i = -radius; i <= radius; i++) {
+          for (int j = -radius; j <= radius; j++) {
+            if (getPixel(x + i, y + j) > grad) {
+              isMax = false;
+              break;
+            }
+          }
+        }
+        res.setPixel(x, y, isMax ? 255 : 0);
+      }
+    }
+  }
+  return res;
+}
