@@ -1,0 +1,19 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-std=c++17",
+      "-Wall",
+      "-Wextra",
+      "-g",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/tools/brush.o",
+      "src/tools/brush.cpp"
+    ],
+    "directory": "/root/donne_multi/cpp",
+    "file": "/root/donne_multi/cpp/src/tools/brush.cpp",
+    "output": "/root/donne_multi/cpp/src/tools/brush.o"
+  }
+]
