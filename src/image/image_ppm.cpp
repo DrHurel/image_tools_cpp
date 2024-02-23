@@ -1,4 +1,5 @@
-#include "image.h"
+#include "image_ppm.h"
+#include "utils.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -37,12 +38,10 @@ ImagePPM::ImagePPM(int w, int h) : Image(w, h) {
   data.resize(3 * width * height);
 }
 
-void ImagePPM::write(std::string filename) {
+void ImagePPM::write(std::string filename) const {
   std::ofstream file(filename, std::ios::binary);
   if (!file.is_open()) {
-    std::cerr << "\nPas d'acces en ecriture sur l'image " << filename
-              << std::endl;
-    exit(EXIT_FAILURE);
+    exit_failure_file(filename);
   } else {
     file << format << "\r";
     file << width << " " << height << "\r255\r";
@@ -62,13 +61,12 @@ void ImagePPM::setPixel(int x, int y, PixelRGB value) {
   data.at(3 * (y * width + x) + 2) = value.b;
 }
 
-void ImagePPM::writeProfil(std::string filename, int target, bool isLine) {
+void ImagePPM::writeProfil(std::string filename, int target,
+                           bool isLine) const {
 
   std::ofstream file(filename, std::ios::out | std::ios::trunc);
   if (!file.is_open()) {
-    std::cerr << "\nPas d'acces en ecriture sur le fichier " << filename
-              << std::endl;
-    exit(EXIT_FAILURE);
+    exit_failure_file(filename);
   } else {
     PixelRGB px;
     if (isLine) {
@@ -83,5 +81,28 @@ void ImagePPM::writeProfil(std::string filename, int target, bool isLine) {
       }
       file.close();
     }
+  }
+}
+
+void ImagePPM::histogram(std::string filename) const {
+  std::ofstream file(filename, std::ios::out | std::ios::trunc);
+  if (!file.is_open()) {
+    exit_failure_file(filename);
+  }
+
+  std::vector<int> histo(256 * 3, 0);
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+      auto px = getPixel(i, j);
+      histo.at(px.r)++;
+      histo.at(px.g * 2)++;
+      histo.at(px.b * 3)++;
+    }
+  }
+
+  for (int i = 0; i < 256; i++) {
+    file << i << ' ' << histo.at(i) << ' ' << histo.at(i + 256) << ' '
+         << histo.at(i + 512) << '\r';
+    file.close();
   }
 }
