@@ -6,9 +6,9 @@
 #include <vector>
 
 typedef struct {
-  unsigned int r;
-  unsigned int g;
-  unsigned int b;
+  int r;
+  int g;
+  int b;
 } PixelRGB;
 
 class Image {

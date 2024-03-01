@@ -37,6 +37,7 @@ public:
    */
   void writeProfil(std::string filename, int target, bool isLine);
 
+  ImagePGM gaussien_filter();
   // ----------------- Gradient -----------------
 
   ImagePGM mapGradient() const;

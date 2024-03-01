@@ -21,6 +21,8 @@ public:
   void setPixel(int x, int y, PixelRGB value);
   void writeProfil(std::string filename, int target, bool isLine) const;
 
+  ImagePPM mapGradient() const;
+
   template <typename T> ImagePPM blur(T b) const {
     auto res = ImagePPM(getWidth(), getHeight());
     auto sum = PixelRGB{0, 0, 0};

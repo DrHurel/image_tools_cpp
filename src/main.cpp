@@ -2,32 +2,39 @@
 
 #include "image_pgm.h"
 #include "image_ppm.h"
-int main() {
-  ImagePGM img("./assets/man.pgm");
-  img.write("./output/man2.pgm");
+#include "ui.h"
+#include <string>
+int main(const int argc, const char *argv[]) {
 
-  ImagePPM img2("./assets/baboon.ppm");
-  img2.write("./output/baboon2.ppm");
+  if (argc != 7) {
+    printUsage(argv[0]);
+  }
 
-  img.writeProfil("./output/histo.txt", 30, true);
-  img2.writeProfil("./output/histo2.txt", 30, true);
+  std::string in;
+  std::string out;
+  std::string fitlter = 0;
 
-  img.writeProfil("./output/histo_column.txt", 30, false);
-  img2.writeProfil("./output/histo2_column.txt", 30, false);
+  for (int i = 1; i < argc; i += 2) {
+    std::string p = argv[i];
 
-  auto b = CircleBrush(20);
+    if (p[0] == '-' && p.length() == 2) {
+      switch (p[1]) {
+      case 'o':
+        out = argv[i + 1];
+        break;
+      case 'i':
+        in = argv[i + 1];
+        break;
+      case 'f':
+        fitlter = argv[i + 1];
+        break;
+      default:
+        printUsage(argv[0]);
+      }
+    } else {
+      printUsage(argv[0]);
+    }
+  }
 
-  img.blur(b).write("./output/blurred.pgm");
-  img2.blur(b).write("./output/blurred2.ppm");
-
-  img.negate();
-  img.write("./output/negated.pgm");
-
-  img2.negate();
-  img2.write("./output/negated2.ppm");
-
-  img.mapGradient().blur(CircleBrush(1)).write("./output/gradient.pgm");
-  img.threshold_gradient(40).write("./output/gradient_threshold.pgm");
-  img.threshold_gradient_hys(40, 120, 1).write("./output/gradient_hys.pgm");
   return 0;
 }

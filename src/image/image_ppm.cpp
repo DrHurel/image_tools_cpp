@@ -1,4 +1,5 @@
 #include "image_ppm.h"
+#include "image.h"
 #include "utils.h"
 #include <fstream>
 #include <iostream>
@@ -51,6 +52,10 @@ void ImagePPM::write(std::string filename) const {
 }
 
 PixelRGB ImagePPM::getPixel(int x, int y) const {
+  if (x < 0 || x >= width || y < 0 || y >= height) {
+    return {255, 255, 255};
+  }
+
   return {static_cast<unsigned char>(data.at(3 * (y * width + x))),
           static_cast<unsigned char>(data.at(3 * (y * width + x) + 1)),
           static_cast<unsigned char>(data.at(3 * (y * width + x) + 2))};
@@ -105,4 +110,17 @@ void ImagePPM::histogram(std::string filename) const {
          << histo.at(i + 512) << '\r';
     file.close();
   }
+}
+
+ImagePPM ImagePPM::mapGradient() const {
+  auto res = ImagePPM(getWidth(), getHeight());
+  for (int x = 0; x < getWidth(); x++) {
+    for (int y = 0; y < getHeight(); y++) {
+      auto dx = addPxl(getPixel(x - 1, y), getPixel(x + 1, y));
+      auto dy = addPxl(getPixel(x, y - 1), getPixel(x, y + 1));
+      PixelRGB norm = sqrtPxl(addPxl(multPxl(dx, dx), multPxl(dy, dy)));
+      res.setPixel(x, y, norm);
+    }
+  }
+  return res;
 }
