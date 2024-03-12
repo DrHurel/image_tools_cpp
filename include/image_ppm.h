@@ -2,18 +2,24 @@
 #ifndef IMAGEPPM_H
 #define IMAGEPPM_H
 
+#include "brush.h"
 #include "image.h"
+#include "image_pgm.h"
+#include <array>
 #include <string>
 
-class ImagePPM : public Image {
+class Image3 : public Image {
 private:
   std::string format = "P6";
 
   void _lire_image_ppm(std::string path);
 
 public:
-  ImagePPM(std::string filename);
-  ImagePPM(int width, int height);
+  Image3(std::string filename);
+  Image3(int width, int height);
+  Image3(ImagePGM y, ImagePGM Cb, ImagePGM Cr, bool isRGB);
+  Image3(ImagePGM y, ImagePGM Cb, ImagePGM Cr, short k);
+
   void write(std::string filename) const;
   void histogram(std::string filename) const;
 
@@ -21,10 +27,12 @@ public:
   void setPixel(int x, int y, PixelRGB value);
   void writeProfil(std::string filename, int target, bool isLine) const;
 
-  ImagePPM mapGradient() const;
+  Image3 mapGradient() const;
+  ImagePGM toPGM() const;
+  std::array<ImagePGM, 3> toYCbCr() const;
 
-  template <typename T> ImagePPM blur(T b) const {
-    auto res = ImagePPM(getWidth(), getHeight());
+  template <typename T> Image3 blur(T b) const {
+    auto res = Image3(getWidth(), getHeight());
     auto sum = PixelRGB{0, 0, 0};
     int count = 0;
     for (int x = 0; x < getWidth(); x++) {
@@ -49,6 +57,9 @@ public:
 
     return res;
   };
+
+  Image3 blurRef(Brush &b) const;
+  std::array<ImagePGM, 3> toHLS() const;
 };
 
 #endif
