@@ -19,7 +19,7 @@ public:
   Image3(int width, int height);
   Image3(ImagePGM y, ImagePGM Cb, ImagePGM Cr, bool isRGB);
   Image3(ImagePGM y, ImagePGM Cb, ImagePGM Cr, short k);
-
+  Image3(ImagePGM h, ImagePGM l, ImagePGM s);
   void write(std::string filename) const;
   void histogram(std::string filename) const;
 

@@ -2,7 +2,6 @@
 #include "image.h"
 #include "image_pgm.h"
 #include "utils.h"
-#include <algorithm>
 #include <array>
 #include <cmath>
 #include <exception>
@@ -260,10 +259,15 @@ std::array<ImagePGM, 3> Image3::toHLS() const {
       float delta = maxVal - minVal;
       PixelRGB hls;
       if (delta > 0) {
-        int t = ((60 * std::fmod(((g - b) / delta), 6)));
-        int t2 = (60 * ((b - r) / delta + 2));
-        int t3 = (60 * ((r - g) / delta + 4));
-        hls = {t * 255, t2, t3};
+        int H = ((60 * std::fmod(((g - b) / delta), 6)));
+        int L = (60 * ((b - r) / delta + 2));
+        int S = (60 * ((r - g) / delta + 4));
+
+        H = std::fmax(0.0, std::fmin(360.0, H));
+        L = std::fmax(0.0, std::fmin(1.0, L));
+        S = std::fmax(0.0, std::fmin(1.0, S));
+
+        hls = {H * 255, L, S};
       } else {
         hls = {0, 0, 0};
       }
@@ -273,17 +277,48 @@ std::array<ImagePGM, 3> Image3::toHLS() const {
     }
   }
 
-  // R '= R / 255
-
-  // G '= G / 255
-
-  // B '= B / 255
-
-  // Cmax = max ( R ', G ', B ')
-
-  // Cmin = min ( R ', G ', B ')
-
-  // Δ = Cmax - Cmin
-
   return res;
+}
+
+Image3::Image3(ImagePGM h, ImagePGM l, ImagePGM s) {
+  format = "P6";
+  data.resize(3 * width * height);
+  for (int x = 0; x < getWidth(); x++) {
+    for (int y = 0; y < getHeight(); y++) {
+      PixelRGB px = {h.getPixel(x, y), l.getPixel(x, y), s.getPixel(x, y)};
+      float C = (1 - std::abs(2 * px.b - 1)) * px.g;
+      float X = C * (1 - std::abs(std::fmod(px.r / 60, 2) - 1));
+      float m = px.g - C / 2;
+      float R, G, B;
+      if (px.r < 60) {
+        R = C;
+        G = X;
+        B = 0;
+      } else if (px.r < 120) {
+        R = X;
+        G = C;
+        B = 0;
+      } else if (px.r < 180) {
+        R = 0;
+        G = C;
+        B = X;
+      } else if (px.r < 240) {
+        R = 0;
+        G = X;
+        B = C;
+      } else if (px.r < 300) {
+        R = X;
+        G = 0;
+        B = C;
+      } else {
+        R = C;
+        G = 0;
+        B = X;
+      }
+      setPixel(x, y,
+               {static_cast<unsigned char>((R + m) * 255),
+                static_cast<unsigned char>((G + m) * 255),
+                static_cast<unsigned char>((B + m) * 255)});
+    }
+  }
 }
